@@ -3,6 +3,7 @@ import { getTickets, getTicketById } from "../services/ticketService";
 import { deleteTicketById } from "../services/ticketService";
 import { calculateUrgency } from "../services/ticketService";
 import { updateTicketById } from "../services/ticketService";
+import { isValidPriority } from "../services/ticketService";
 
 // List all tickets
 export const listTickets = (req: Request, res: Response) => {
@@ -23,8 +24,8 @@ export const addTicket = (req: Request, res: Response) => {
   // Validation
   if (!title) return res.status(400).json({ message: "Missing required field: title" });
   if (!description) return res.status(400).json({ message: "Missing required field: description" });
-  if (!["critical", "high", "medium", "low"].includes(priority))
-    return res.status(400).json({ message: "Invalid priority. Must be one of: critical, high, medium, low" });
+ if (!isValidPriority(priority))
+  return res.status(400).json({ message: "Invalid priority. Must be one of: critical, high, medium, low" });
 
   const id = (getTickets().length + 1).toString();
 
@@ -44,20 +45,16 @@ export const addTicket = (req: Request, res: Response) => {
 
 // Update an existing ticket
 export const updateTicket = (req: Request, res: Response) => {
-  const ticket = getTicketById(req.params.id as string);
+  const { id } = req.params;
+  const updates = req.body;
 
-  if (!ticket) {
+  const updatedTicket = updateTicketById(id as string, updates);
+
+  if (!updatedTicket) {
     return res.status(404).json({ message: "Ticket not found" });
   }
 
-  const { title, description, priority, status } = req.body;
-
-  if (title) ticket.title = title;
-  if (description) ticket.description = description;
-  if (priority) ticket.priority = priority;
-  if (status) ticket.status = status;
-
-  res.json(ticket);
+  res.json(updatedTicket);
 };
 
 // Delete a ticket
@@ -80,21 +77,4 @@ export const getTicketUrgency = (req: Request, res: Response) => {
   res.json({ ...ticket, urgency });
 };
 
-// Update ticket
-export const updateTicket = (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { title, description, priority, status } = req.body;
 
-  // Validation
-  if (priority && !["critical", "high", "medium", "low"].includes(priority))
-    return res.status(400).json({ message: "Invalid priority. Must be one of: critical, high, medium, low" });
-
-  if (status && !["open", "in-progress", "resolved"].includes(status))
-    return res.status(400).json({ message: "Invalid status. Must be one of: open, in-progress, resolved" });
-
-  const updated = updateTicketById(id, { title, description, priority, status });
-
-  if (!updated) return res.status(404).json({ message: "Ticket not found" });
-
-  res.json(updated);
-};

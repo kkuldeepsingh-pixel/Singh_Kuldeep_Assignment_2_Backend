@@ -19,6 +19,13 @@ export const deleteTicketById = (id: string) => {
   return tickets.length !== originalLength;
 };
 
+// Validation helpers
+export const isValidPriority = (priority: any) => 
+  ["critical", "high", "medium", "low"].includes(priority);
+
+export const isValidStatus = (status: any) =>
+  ["open", "in-progress", "resolved"].includes(status);
+
 // Ticket urgency calculation 
 export const calculateUrgency = (ticket: Ticket) => {
   if (ticket.status === "resolved") return { score: 0, level: "Resolved" };
@@ -61,3 +68,11 @@ export const updateTicketById = (
 
   return ticket;
 };
+
+// Validate priority
+export const validatePriority = (priority: any): priority is "critical" | "high" | "medium" | "low" =>
+  ["critical", "high", "medium", "low"].includes(priority);
+
+// Validate status
+export const validateStatus = (status: any): status is "open" | "in-progress" | "resolved" =>
+  ["open", "in-progress", "resolved"].includes(status);
