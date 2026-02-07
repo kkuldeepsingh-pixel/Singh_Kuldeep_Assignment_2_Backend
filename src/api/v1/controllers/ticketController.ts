@@ -13,7 +13,7 @@ export const viewTicket = (req: Request, res: Response) => {
   res.json(ticket);
 };
 
-// Add a new ticket (optional, based on your notes)
+// Add a new ticket 
 export const addTicket = (req: Request, res: Response) => {
   const { title, description, priority } = req.body;
 
@@ -37,4 +37,22 @@ export const addTicket = (req: Request, res: Response) => {
   getTickets().push(ticket);
 
   res.status(201).json(ticket);
+};
+
+// Update an existing ticket
+export const updateTicket = (req: Request, res: Response) => {
+  const ticket = getTicketById(req.params.id as string);
+
+  if (!ticket) {
+    return res.status(404).json({ message: "Ticket not found" });
+  }
+
+  const { title, description, priority, status } = req.body;
+
+  if (title) ticket.title = title;
+  if (description) ticket.description = description;
+  if (priority) ticket.priority = priority;
+  if (status) ticket.status = status;
+
+  res.json(ticket);
 };
