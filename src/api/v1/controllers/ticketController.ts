@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { getTickets, getTicketById } from "../services/ticketService";
 import { deleteTicketById } from "../services/ticketService";
 import { calculateUrgency } from "../services/ticketService";
+import { updateTicketById } from "../services/ticketService";
 
 // List all tickets
 export const listTickets = (req: Request, res: Response) => {
@@ -77,4 +78,23 @@ export const getTicketUrgency = (req: Request, res: Response) => {
 
   const urgency = calculateUrgency(ticket);
   res.json({ ...ticket, urgency });
+};
+
+// Update ticket
+export const updateTicket = (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { title, description, priority, status } = req.body;
+
+  // Validation
+  if (priority && !["critical", "high", "medium", "low"].includes(priority))
+    return res.status(400).json({ message: "Invalid priority. Must be one of: critical, high, medium, low" });
+
+  if (status && !["open", "in-progress", "resolved"].includes(status))
+    return res.status(400).json({ message: "Invalid status. Must be one of: open, in-progress, resolved" });
+
+  const updated = updateTicketById(id, { title, description, priority, status });
+
+  if (!updated) return res.status(404).json({ message: "Ticket not found" });
+
+  res.json(updated);
 };
