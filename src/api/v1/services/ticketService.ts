@@ -45,3 +45,19 @@ export const calculateUrgency = (ticket: Ticket) => {
 
   return { score: urgencyScore, level };
 };
+
+// Update ticket by ID
+export const updateTicketById = (
+  id: string,
+  updates: Partial<Pick<Ticket, "title" | "description" | "priority" | "status">>
+) => {
+  const ticket = tickets.find(t => t.id === id);
+  if (!ticket) return null;
+
+  if (updates.title !== undefined) ticket.title = updates.title;
+  if (updates.description !== undefined) ticket.description = updates.description;
+  if (updates.priority !== undefined) ticket.priority = updates.priority;
+  if (updates.status !== undefined) ticket.status = updates.status;
+
+  return ticket;
+};
