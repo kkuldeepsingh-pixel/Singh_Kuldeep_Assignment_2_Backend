@@ -4,6 +4,7 @@ import { deleteTicketById } from "../services/ticketService";
 import { calculateUrgency } from "../services/ticketService";
 import { updateTicketById } from "../services/ticketService";
 import { isValidPriority } from "../services/ticketService";
+import { isValidStatus } from "../services/ticketService";
 
 // List all tickets
 export const listTickets = (req: Request, res: Response) => {
@@ -47,6 +48,14 @@ export const addTicket = (req: Request, res: Response) => {
 export const updateTicket = (req: Request, res: Response) => {
   const { id } = req.params;
   const updates = req.body;
+
+    if (updates.priority && !isValidPriority(updates.priority)) {
+    return res.status(400).json({ message: "Invalid priority. Must be one of: critical, high, medium, low" });
+  }
+
+  if (updates.status && !isValidStatus(updates.status)) {
+    return res.status(400).json({ message: "Invalid status. Must be one of: open, in-progress, resolved" });
+  }
 
   const updatedTicket = updateTicketById(id as string, updates);
 
