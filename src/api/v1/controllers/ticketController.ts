@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { getTickets, getTicketById } from "../services/ticketService";
 import { deleteTicketById } from "../services/ticketService";
+import { calculateUrgency } from "../services/ticketService";
 
 // List all tickets
 export const listTickets = (req: Request, res: Response) => {
@@ -67,4 +68,13 @@ export const deleteTicket = (req: Request, res: Response) => {
   }
 
   res.status(200).json({ message: "Ticket deleted successfully" });
+};
+
+// Calculate ticket urgency
+export const getTicketUrgency = (req: Request, res: Response) => {
+  const ticket = getTicketById(req.params.id as string);
+  if (!ticket) return res.status(404).json({ message: "Ticket not found" });
+
+  const urgency = calculateUrgency(ticket);
+  res.json({ ...ticket, urgency });
 };
