@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { getTickets, getTicketById } from "../services/ticketService";
+import { deleteTicketById } from "../services/ticketService";
 
 // List all tickets
 export const listTickets = (req: Request, res: Response) => {
@@ -55,4 +56,15 @@ export const updateTicket = (req: Request, res: Response) => {
   if (status) ticket.status = status;
 
   res.json(ticket);
+};
+
+// Delete a ticket
+export const deleteTicket = (req: Request, res: Response) => {
+  const deleted = deleteTicketById(req.params.id as string);
+
+  if (!deleted) {
+    return res.status(404).json({ message: "Ticket not found" });
+  }
+
+  res.status(200).json({ message: "Ticket deleted successfully" });
 };
