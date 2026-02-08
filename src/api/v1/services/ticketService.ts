@@ -27,8 +27,11 @@ export const isValidStatus = (status: any) =>
   ["open", "in-progress", "resolved"].includes(status);
 
 // Ticket urgency calculation 
+
 export const calculateUrgency = (ticket: Ticket) => {
-  if (ticket.status === "resolved") return { score: 0, level: "Resolved" };
+  if (ticket.status === "resolved") {
+    return { score: 0, level: "LOW" };
+  }
 
   const baseScores = {
     critical: 50,
@@ -39,19 +42,21 @@ export const calculateUrgency = (ticket: Ticket) => {
 
   const now = new Date();
   const created = new Date(ticket.createdAt);
-  const ageDays = Math.floor((now.getTime() - created.getTime()) / (1000 * 60 * 60 * 24));
+  const ageDays = Math.floor(
+    (now.getTime() - created.getTime()) / (1000 * 60 * 60 * 24)
+  );
 
-  const ageMultiplier = 1; 
-  const urgencyScore = baseScores[ticket.priority] + ageDays * ageMultiplier;
+  let urgencyScore = baseScores[ticket.priority] + ageDays;
 
   let level: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL" = "LOW";
 
   if (urgencyScore >= 70) level = "CRITICAL";
-  else if (urgencyScore >= 35) level = "HIGH";
+  else if (urgencyScore >= 30) level = "HIGH";
   else if (urgencyScore >= 25) level = "MEDIUM";
 
   return { score: urgencyScore, level };
 };
+
 
 // Update ticket by ID
 export const updateTicketById = (

@@ -1,9 +1,13 @@
 import express from 'express';
 import morgan from 'morgan';
+import ticketRoutes from './api/v1/routes/ticketRoutes';
+import healthRoutes from './api/v1/routes/healthRoutes';
 
 const app = express();
 app.use(express.json());
 app.use(morgan('dev'));  
+app.use('/api/v1', ticketRoutes);
+app.use('/api/v1', healthRoutes);
 
 // Basic health check
 app.get('/health', (_req, res) => {
