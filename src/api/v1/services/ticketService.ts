@@ -47,7 +47,7 @@ export const calculateUrgency = (ticket: Ticket) => {
   let level: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL" = "LOW";
 
   if (urgencyScore >= 70) level = "CRITICAL";
-  else if (urgencyScore >= 40) level = "HIGH";
+  else if (urgencyScore >= 35) level = "HIGH";
   else if (urgencyScore >= 25) level = "MEDIUM";
 
   return { score: urgencyScore, level };
